@@ -30,7 +30,7 @@ public class MatchService {
   public Match findById(Long id) {
     return matchRepository
         .findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Match %d not found".formatted(id)));
+        .orElseThrow(() -> new IllegalArgumentException("Match %d not found (test)".formatted(id)));
   }
 
   public List<Goal> findGoals(Long matchId) {
