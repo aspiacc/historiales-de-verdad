@@ -1,12 +1,13 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/historiales
+    url: jdbc:postgresql://localhost:5433/historiales
     username: historiales
     password: historiales
   jpa:
     hibernate:
       ddl-auto: update
     open-in-view: false
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
@@ -21,3 +22,12 @@ server:
 logging:
   level:
     org.hibernate.SQL: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized

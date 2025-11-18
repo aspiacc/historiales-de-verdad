@@ -2,6 +2,9 @@ package com.historiales.service;
 
 import com.historiales.domain.Goal;
 import com.historiales.domain.Match;
+import com.historiales.domain.Team;
+import com.historiales.domain.Tournament;
+import com.historiales.dto.CreateMatchRequest;
 import com.historiales.repository.GoalRepository;
 import com.historiales.repository.MatchRepository;
 import com.historiales.repository.TeamRepository;
@@ -46,6 +49,44 @@ public class MatchService {
   public Page<Match> findByTournament(Long tournamentId, Pageable pageable) {
     ensureTournamentExists(tournamentId);
     return matchRepository.search(null, tournamentId, pageable);
+  }
+
+  @Transactional
+  public Match createMatch(CreateMatchRequest request) {
+    Team homeTeam =
+        teamRepository
+            .findById(request.homeTeamId())
+            .orElseThrow(
+                () -> new IllegalArgumentException("Team %d not found".formatted(request.homeTeamId())));
+    Team awayTeam =
+        teamRepository
+            .findById(request.awayTeamId())
+            .orElseThrow(
+                () -> new IllegalArgumentException("Team %d not found".formatted(request.awayTeamId())));
+    if (homeTeam.getId().equals(awayTeam.getId())) {
+      throw new IllegalArgumentException("Home and away teams must be different");
+    }
+
+    Tournament tournament =
+        tournamentRepository
+            .findById(request.tournamentId())
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Tournament %d not found".formatted(request.tournamentId())));
+
+    Match match = new Match();
+    match.setMatchDate(request.matchDate());
+    match.setVenue(request.venue());
+    match.setStage(request.stage());
+    match.setTournament(tournament);
+    match.setHomeTeam(homeTeam);
+    match.setAwayTeam(awayTeam);
+    match.setHomeScore(request.homeScore());
+    match.setAwayScore(request.awayScore());
+    match.setAttendance(request.attendance());
+
+    return matchRepository.save(match);
   }
 
   private void validateMatchExists(Long matchId) {

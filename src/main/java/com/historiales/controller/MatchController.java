@@ -1,5 +1,6 @@
 package com.historiales.controller;
 
+import com.historiales.dto.CreateMatchRequest;
 import com.historiales.dto.GoalDto;
 import com.historiales.dto.MatchDto;
 import com.historiales.mapper.MatchMapper;
@@ -9,11 +10,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/matches")
@@ -40,5 +46,11 @@ public class MatchController {
   @GetMapping("/{id}/goals")
   public List<GoalDto> goals(@PathVariable Long id) {
     return MatchMapper.toGoalDtos(matchService.findGoals(id));
+  }
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public MatchDto create(@Valid @RequestBody CreateMatchRequest request) {
+    return MatchMapper.toDto(matchService.createMatch(request));
   }
 }
